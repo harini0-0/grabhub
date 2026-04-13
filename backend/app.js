@@ -5,6 +5,8 @@ const restaurantRoutes = require('./routes/restaurantRoutes');
 const favouritesRoutes = require('./routes/favouritesRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const deliveryRoutes = require('./routes/deliveryRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const customerRoutes = require('./routes/customerRoutes');
 
 const app = express();
 
@@ -21,5 +23,7 @@ app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/favourites', favouritesRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/delivery', deliveryRoutes);
+app.use('/api/reviews',    reviewRoutes);
+app.use('/api/customers', customerRoutes);
 
 module.exports = app;

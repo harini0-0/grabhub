@@ -1,20 +1,89 @@
 import { useEffect, useState } from "react";
 
 const BASE_URL = "http://localhost:5050/api";
+const PARTNER_ID = 1; // demo — same pattern as CUSTOMER_ID = 1
 
 function statusBadgeClass(status = "") {
   return `badge badge-status-${status.toLowerCase().replace(/\s+/g, "-")}`;
 }
 
+function availClass(status = "") {
+  const s = status.toLowerCase();
+  if (s === "online" || s === "available") return "badge partner-avail-online";
+  if (s === "busy")   return "badge partner-avail-busy";
+  return "badge partner-avail-offline";
+}
+
+function initials(first = "", last = "") {
+  return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+}
+
+// ── Delivery partner info card ────────────────────────────────────────────────
+
+function PartnerInfoCard({ partner }) {
+  if (!partner) return null;
+
+  const rating = parseFloat(partner.rating);
+
+  return (
+    <div className="partner-info-card">
+      <div className="partner-avatar">
+        {initials(partner.first_name, partner.last_name)}
+      </div>
+
+      <div className="partner-info-main">
+        <p className="partner-name">
+          {partner.first_name} {partner.last_name}
+        </p>
+        <p className="partner-contact">
+          {partner.email}&nbsp;&nbsp;·&nbsp;&nbsp;{partner.phone}
+        </p>
+      </div>
+
+      <div className="partner-stats">
+        <div className="partner-stat">
+          <span className="partner-stat-value" style={{ color: "#F59E0B", letterSpacing: 1 }}>
+            {isNaN(rating) ? "—" : rating.toFixed(1)}
+          </span>
+          <span className="partner-stat-label">Rating</span>
+        </div>
+        <div className="partner-stat">
+          <span className="partner-stat-value">{formatDate(partner.date_joined)}</span>
+          <span className="partner-stat-label">Joined</span>
+        </div>
+        <div className="partner-stat">
+          <span className={availClass(partner.availability_status)}>
+            {partner.availability_status ?? "—"}
+          </span>
+          <span className="partner-stat-label" style={{ marginTop: 4 }}>Status</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function DeliveryDashboard() {
-  const [orders, setOrders] = useState([]);
+  const [partner, setPartner] = useState(null);
+  const [orders,  setOrders]  = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/delivery/orders`)
-      .then(res => res.json())
-      .then(data => { setOrders(data); setLoading(false); })
-      .catch(() => setLoading(false));
+    // Load partner details and orders in parallel
+    Promise.all([
+      fetch(`${BASE_URL}/delivery/partner/${PARTNER_ID}`).then(r => r.json()),
+      fetch(`${BASE_URL}/delivery/orders`).then(r => r.json()),
+    ]).then(([partnerData, ordersData]) => {
+      setPartner(partnerData);
+      setOrders(Array.isArray(ordersData) ? ordersData : []);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
   return (
@@ -25,15 +94,24 @@ export default function DeliveryDashboard() {
       </nav>
 
       <div className="delivery-content">
+
+        {/* Partner info */}
+        <PartnerInfoCard partner={partner} />
+
         <h1 className="delivery-page-title">Your Orders</h1>
         <p className="delivery-page-sub">
-          {loading ? "Loading…" : `${orders.length} order${orders.length !== 1 ? "s" : ""} assigned`}
+          {loading
+            ? "Loading…"
+            : `${orders.length} order${orders.length !== 1 ? "s" : ""} assigned`}
         </p>
 
         {loading && (
-          <div className="loading-state" style={{ color: "rgba(255,255,255,0.4)" }}>
-            <div className="loading-spinner" style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "var(--primary)" }} />
-            <span className="loading-text" style={{ color: "rgba(255,255,255,0.4)" }}>Loading orders…</span>
+          <div className="loading-state">
+            <div className="loading-spinner"
+              style={{ borderColor: "rgba(255,255,255,0.15)", borderTopColor: "var(--primary)" }} />
+            <span className="loading-text" style={{ color: "rgba(255,255,255,0.4)" }}>
+              Loading…
+            </span>
           </div>
         )}
 
@@ -54,17 +132,13 @@ export default function DeliveryDashboard() {
                 <span className="delivery-order-id">#{order.order_id}</span>
 
                 <div className="delivery-order-main">
-                  <div className="delivery-order-restaurant">
-                    {order.restaurant_name}
-                  </div>
+                  <div className="delivery-order-restaurant">{order.restaurant_name}</div>
                   <div className="delivery-order-address">
                     📍 {order.street_name}, {order.city}, {order.state}
                   </div>
                 </div>
 
-                <span className={statusBadgeClass(order.status)}>
-                  {order.status}
-                </span>
+                <span className={statusBadgeClass(order.status)}>{order.status}</span>
 
                 <span className="delivery-order-amount">
                   ${parseFloat(order.total_amount).toFixed(2)}

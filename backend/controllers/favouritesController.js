@@ -24,11 +24,14 @@ exports.getFavourites = async (req, res) => {
 
   try {
     const [rows] = await db.query(`
-      SELECT f.favourite_id, m.item_name, r.restaurant_name
+      SELECT f.favourite_id, f.item_id, f.restaurant_id,
+             m.item_name,
+             r.restaurant_name, r.city, r.state, r.average_rating
       FROM Favourites f
       JOIN Menu_Item m ON f.item_id = m.item_id
       JOIN Restaurant r ON f.restaurant_id = r.restaurant_id
       WHERE f.customer_id = ?
+      ORDER BY f.saved_at DESC
     `, [customerId]);
 
     res.json(rows);

@@ -5,9 +5,9 @@ const BASE_URL = "http://localhost:5050/api";
 
 const RESTAURANT_EMOJIS = ["🍕", "🍔", "🌮", "🍜", "🍱", "🥘", "🍛", "🥗", "🍣", "🌯", "🍝", "🥙"];
 
-export default function RestaurantList() {
+export default function RestaurantList({ customerId, initialRestaurant = null, onClearInitial }) {
   const [restaurants, setRestaurants] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(initialRestaurant);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,8 +17,19 @@ export default function RestaurantList() {
       .catch(() => setLoading(false));
   }, []);
 
+  // Respond to subsequent prop changes (e.g. user navigates to a different
+  // favourite without leaving the Restaurants tab)
+  useEffect(() => {
+    if (initialRestaurant) setSelected(initialRestaurant);
+  }, [initialRestaurant]);
+
+  const handleGoBack = () => {
+    setSelected(null);
+    if (onClearInitial) onClearInitial();
+  };
+
   if (selected) {
-    return <MenuView restaurant={selected} goBack={() => setSelected(null)} />;
+    return <MenuView restaurant={selected} goBack={handleGoBack} customerId={customerId} />;
   }
 
   return (

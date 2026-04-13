@@ -20,6 +20,13 @@ export default function LandingPage({ setRole }) {
             <span className="role-card-title">Delivery Partner</span>
             <span className="role-card-sub">Manage your deliveries</span>
           </div>
+
+          <div className="role-card" onClick={() => setRole("admin")} role="button" tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && setRole("admin")}>
+            <span className="role-card-icon">🏪</span>
+            <span className="role-card-title">Restaurant Admin</span>
+            <span className="role-card-sub">Manage menus &amp; items</span>
+          </div>
         </div>
       </div>
     </div>
