@@ -3,14 +3,18 @@ import MenuView from "./MenuView";
 
 const BASE_URL = "http://localhost:5050/api";
 
+const RESTAURANT_EMOJIS = ["🍕", "🍔", "🌮", "🍜", "🍱", "🥘", "🍛", "🥗", "🍣", "🌯", "🍝", "🥙"];
+
 export default function RestaurantList() {
   const [restaurants, setRestaurants] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${BASE_URL}/restaurants`)
       .then(res => res.json())
-      .then(data => setRestaurants(data));
+      .then(data => { setRestaurants(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   if (selected) {
@@ -19,17 +23,51 @@ export default function RestaurantList() {
 
   return (
     <div>
-      <h2>Restaurants</h2>
+      <div className="page-header">
+        <h2 className="page-title">Restaurants</h2>
+        <p className="page-sub">Browse restaurants and explore their menus</p>
+      </div>
 
-      {restaurants.map(r => (
-        <div key={r.restaurant_id} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
-          <h3>{r.restaurant_name}</h3>
-          <p>{r.city}, {r.state}</p>
-          <p>⭐ {r.average_rating}</p>
-
-          <button onClick={() => setSelected(r)}>View Menu</button>
+      {loading && (
+        <div className="loading-state">
+          <div className="loading-spinner" />
+          <span className="loading-text">Finding restaurants near you…</span>
         </div>
-      ))}
+      )}
+
+      {!loading && restaurants.length === 0 && (
+        <div className="empty-state">
+          <div className="empty-state-icon">🍽️</div>
+          <p className="empty-state-text">No restaurants found</p>
+          <p className="empty-state-sub">Check back soon — more are on the way.</p>
+        </div>
+      )}
+
+      {!loading && restaurants.length > 0 && (
+        <div className="restaurant-grid">
+          {restaurants.map(r => {
+            const emoji = RESTAURANT_EMOJIS[r.restaurant_id % RESTAURANT_EMOJIS.length];
+            const rating = parseFloat(r.average_rating);
+            return (
+              <div key={r.restaurant_id} className="restaurant-card">
+                <div className="restaurant-card-header">{emoji}</div>
+                <div className="restaurant-card-body">
+                  <h3 className="restaurant-name">{r.restaurant_name}</h3>
+                  <p className="restaurant-location">📍 {r.city}, {r.state}</p>
+                  <div className="restaurant-meta">
+                    <span className="rating-pill">
+                      ⭐ {isNaN(rating) ? "—" : rating.toFixed(1)}
+                    </span>
+                  </div>
+                  <button className="btn-primary full" onClick={() => setSelected(r)}>
+                    View Menu
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

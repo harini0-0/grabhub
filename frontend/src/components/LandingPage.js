@@ -1,16 +1,27 @@
 export default function LandingPage({ setRole }) {
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h1>🍔 GrabHub</h1>
-      <h2>Select Role</h2>
+    <div className="landing">
+      <div className="landing-content">
+        <h1 className="landing-logo">Grab<span>Hub</span></h1>
+        <p className="landing-tagline">Food delivered on your schedule</p>
+        <div className="landing-divider" />
 
-      <button onClick={() => setRole("customer")}>
-        👤 Customer
-      </button>
+        <div className="landing-roles">
+          <div className="role-card" onClick={() => setRole("customer")} role="button" tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && setRole("customer")}>
+            <span className="role-card-icon">🍽️</span>
+            <span className="role-card-title">Customer</span>
+            <span className="role-card-sub">Order food &amp; track delivery</span>
+          </div>
 
-      <button onClick={() => setRole("delivery")}>
-        🚴 Delivery Partner
-      </button>
+          <div className="role-card" onClick={() => setRole("delivery")} role="button" tabIndex={0}
+            onKeyDown={e => e.key === 'Enter' && setRole("delivery")}>
+            <span className="role-card-icon">🚴</span>
+            <span className="role-card-title">Delivery Partner</span>
+            <span className="role-card-sub">Manage your deliveries</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

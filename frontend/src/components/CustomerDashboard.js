@@ -8,15 +8,35 @@ export default function CustomerDashboard() {
 
   return (
     <div>
-      <h1>Customer Dashboard</h1>
+      <nav className="navbar">
+        <span className="navbar-brand">Grab<span>Hub</span></span>
+        <div className="navbar-tabs">
+          <button
+            className={`navbar-tab ${view === "restaurants" ? "active" : ""}`}
+            onClick={() => setView("restaurants")}
+          >
+            🍴 Restaurants
+          </button>
+          <button
+            className={`navbar-tab ${view === "profile" ? "active" : ""}`}
+            onClick={() => setView("profile")}
+          >
+            🧬 My Profile
+          </button>
+          <button
+            className={`navbar-tab ${view === "recommendations" ? "active" : ""}`}
+            onClick={() => setView("recommendations")}
+          >
+            ✨ For You
+          </button>
+        </div>
+      </nav>
 
-      <button onClick={() => setView("restaurants")}>Restaurants</button>
-      <button onClick={() => setView("profile")}>Profile</button>
-      <button onClick={() => setView("recommendations")}>Recommendations</button>
-
-      {view === "restaurants" && <RestaurantList />}
-      {view === "profile" && <Profile />}
-      {view === "recommendations" && <Recommendations />}
+      <main className="page">
+        {view === "restaurants"     && <RestaurantList />}
+        {view === "profile"         && <Profile />}
+        {view === "recommendations" && <Recommendations />}
+      </main>
     </div>
   );
 }
