@@ -14,8 +14,12 @@ export default function Subscriptions() {
   const fetchSubs = async () => {
     try {
       const res = await fetch(`${API}/subscriptions/customer/${customerId}`);
-      setSubscriptions(await res.json());
-    } catch (err) { console.error(err); }
+      const data = await res.json();
+      setSubscriptions(Array.isArray(data) ? data : []);
+    } catch (err) { 
+      console.error(err);
+      setSubscriptions([]);
+    }
   };
 
   const handleSubscribe = async (e) => {

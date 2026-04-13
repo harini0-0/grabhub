@@ -11,8 +11,12 @@ export default function Billing() {
     const fetchBills = async () => {
       try {
         const res = await fetch(`${API}/billing/customer/${customerId}`);
-        setBills(await res.json());
-      } catch (err) { console.error(err); }
+        const data = await res.json();
+        setBills(Array.isArray(data) ? data : []);
+      } catch (err) { 
+        console.error(err);
+        setBills([]);
+      }
     };
     fetchBills();
   }, []);

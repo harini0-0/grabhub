@@ -15,8 +15,12 @@ export default function Addresses() {
   const fetchAddresses = async () => {
     try {
       const res = await fetch(`${API}/addresses/customer/${customerId}`);
-      setAddresses(await res.json());
-    } catch (err) { console.error(err); }
+      const data = await res.json();
+      setAddresses(Array.isArray(data) ? data : []);
+    } catch (err) { 
+      console.error(err);
+      setAddresses([]);
+    }
   };
 
   const handleSubmit = async (e) => {

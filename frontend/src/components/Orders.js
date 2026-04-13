@@ -11,20 +11,18 @@ export default function Orders() {
   const [menuItems, setMenuItems] = useState([]);
   const [message, setMessage] = useState("");
 
-  // TODO: Replace with actual logged-in customer ID
   const customerId = 1;
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  useEffect(() => { fetchOrders(); }, []);
 
   const fetchOrders = async () => {
     try {
       const res = await fetch(`${API}/orders/customer/${customerId}`);
       const data = await res.json();
-      setOrders(data);
+      setOrders(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching orders:", err);
+      setOrders([]);
     }
   };
 
@@ -57,8 +55,10 @@ export default function Orders() {
         fetch(`${API}/restaurants`),
         fetch(`${API}/addresses/customer/${customerId}`)
       ]);
-      setRestaurants(await restRes.json());
-      setAddresses(await addrRes.json());
+      const restData = await restRes.json();
+      const addrData = await addrRes.json();
+      setRestaurants(Array.isArray(restData) ? restData : []);
+      setAddresses(Array.isArray(addrData) ? addrData : []);
       setShowPlaceOrder(true);
     } catch (err) {
       console.error("Error loading form data:", err);
@@ -68,9 +68,11 @@ export default function Orders() {
   const fetchMenu = async (restaurantId) => {
     try {
       const res = await fetch(`${API}/restaurants/${restaurantId}/menu`);
-      setMenuItems(await res.json());
+      const data = await res.json();
+      setMenuItems(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error fetching menu:", err);
+      setMenuItems([]);
     }
   };
 
@@ -141,6 +143,7 @@ export default function Orders() {
   // --- ORDER DETAIL VIEW ---
   if (selectedOrder) {
     const { order, items, billing } = selectedOrder;
+    const itemsList = Array.isArray(items) ? items : [];
     return (
       <div style={{ padding: "1rem" }}>
         <button onClick={() => setSelectedOrder(null)} style={btnStyle}>← Back</button>
@@ -159,7 +162,7 @@ export default function Orders() {
         <table style={tableStyle}>
           <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
           <tbody>
-            {items.map((i, idx) => (
+            {itemsList.map((i, idx) => (
               <tr key={idx}>
                 <td>{i.item_name}</td><td>{i.quantity}</td>
                 <td>${Number(i.unit_price).toFixed(2)}</td>
@@ -202,11 +205,13 @@ export default function Orders() {
           <div style={fieldStyle}>
             <label>Delivery Address</label>
             <select name="address_id" required style={inputStyle}>
-              {addresses.map((a) => (
-                <option key={a.address_id} value={a.address_id}>
-                  {a.address_type}: {a.street_number} {a.street_name}, {a.city}
-                </option>
-              ))}
+              {addresses.length === 0 ? <option value="">No addresses saved</option> :
+                addresses.map((a) => (
+                  <option key={a.address_id} value={a.address_id}>
+                    {a.address_type}: {a.street_number} {a.street_name}, {a.city}
+                  </option>
+                ))
+              }
             </select>
           </div>
           <div style={fieldStyle}>
