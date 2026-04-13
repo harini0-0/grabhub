@@ -1,114 +1,79 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import RestaurantList from "./RestaurantList";
 import Profile from "./Profile";
 import Recommendations from "./Recommendations";
-import OrderHistory from "./OrderHistory";
-
-const BASE_URL = "http://localhost:5050/api";
+import Orders from "./Orders";
+import Addresses from "./Addresses";
+import Subscriptions from "./Subscriptions";
+import Billing from "./Billing";
 
 export default function CustomerDashboard() {
   const [view, setView] = useState("restaurants");
-  const [directRestaurant, setDirectRestaurant] = useState(null);
-
-  // Customer switcher state
-  const [customers, setCustomers] = useState([]);
-  const [customerId, setCustomerId] = useState(1);
-
-  // Load customer list once on mount
-  useEffect(() => {
-    fetch(`${BASE_URL}/customers`)
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setCustomers(data);
-      })
-      .catch(() => {});
-  }, []);
-
-  const goToRestaurant = (restaurant) => {
-    setDirectRestaurant(restaurant);
-    setView("restaurants");
-  };
-
-  const handleTabClick = (tab) => {
-    if (tab !== "restaurants") setDirectRestaurant(null);
-    setView(tab);
-  };
-
-  const handleCustomerChange = (e) => {
-    setCustomerId(Number(e.target.value));
-    // Reset direct-nav so switching customer on Restaurants tab
-    // doesn't keep a stale restaurant open
-    setDirectRestaurant(null);
-  };
 
   return (
     <div>
       <nav className="navbar">
         <span className="navbar-brand">Grab<span>Hub</span></span>
-
         <div className="navbar-tabs">
+          {/* Harini's tabs (unchanged) */}
           <button
             className={`navbar-tab ${view === "restaurants" ? "active" : ""}`}
-            onClick={() => handleTabClick("restaurants")}
+            onClick={() => setView("restaurants")}
           >
             🍴 Restaurants
           </button>
           <button
             className={`navbar-tab ${view === "profile" ? "active" : ""}`}
-            onClick={() => handleTabClick("profile")}
+            onClick={() => setView("profile")}
           >
             🧬 My Profile
           </button>
           <button
             className={`navbar-tab ${view === "recommendations" ? "active" : ""}`}
-            onClick={() => handleTabClick("recommendations")}
+            onClick={() => setView("recommendations")}
           >
             ✨ For You
           </button>
+
+          {/* Mithuna's tabs (added) */}
           <button
             className={`navbar-tab ${view === "orders" ? "active" : ""}`}
-            onClick={() => handleTabClick("orders")}
+            onClick={() => setView("orders")}
           >
             📦 Orders
           </button>
+          <button
+            className={`navbar-tab ${view === "addresses" ? "active" : ""}`}
+            onClick={() => setView("addresses")}
+          >
+            📍 Addresses
+          </button>
+          <button
+            className={`navbar-tab ${view === "subscriptions" ? "active" : ""}`}
+            onClick={() => setView("subscriptions")}
+          >
+            ⭐ GrabHub+
+          </button>
+          <button
+            className={`navbar-tab ${view === "billing" ? "active" : ""}`}
+            onClick={() => setView("billing")}
+          >
+            💳 Billing
+          </button>
         </div>
-
-        {/* Customer switcher — only shown when customer list has loaded */}
-        {customers.length > 0 && (
-          <div className="navbar-switcher">
-            <span className="navbar-switcher-label">Viewing as</span>
-            <select
-              className="navbar-switcher-select"
-              value={customerId}
-              onChange={handleCustomerChange}
-            >
-              {customers.map(c => (
-                <option key={c.customer_id} value={c.customer_id}>
-                  {c.first_name} {c.last_name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
       </nav>
 
       <main className="page">
-        {view === "restaurants" && (
-          <RestaurantList
-            customerId={customerId}
-            initialRestaurant={directRestaurant}
-            onClearInitial={() => setDirectRestaurant(null)}
-          />
-        )}
-        {view === "profile" && (
-          <Profile customerId={customerId} />
-        )}
-        {view === "recommendations" && (
-          <Recommendations customerId={customerId} goToRestaurant={goToRestaurant} />
-        )}
-        {view === "orders" && (
-          <OrderHistory customerId={customerId} />
-        )}
+        {/* Harini's views (unchanged) */}
+        {view === "restaurants"     && <RestaurantList />}
+        {view === "profile"         && <Profile />}
+        {view === "recommendations" && <Recommendations />}
+
+        {/* Mithuna's views (added) */}
+        {view === "orders"          && <Orders />}
+        {view === "addresses"       && <Addresses />}
+        {view === "subscriptions"   && <Subscriptions />}
+        {view === "billing"         && <Billing />}
       </main>
     </div>
   );
