@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 const BASE_URL = "http://localhost:5050/api";
-const PARTNER_ID = 1; // demo — same pattern as CUSTOMER_ID = 1
 
 function statusBadgeClass(status = "") {
   return `badge badge-status-${status.toLowerCase().replace(/\s+/g, "-")}`;
@@ -69,33 +68,68 @@ function PartnerInfoCard({ partner }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function DeliveryDashboard() {
-  const [partner, setPartner] = useState(null);
-  const [orders,  setOrders]  = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function DeliveryDashboard({ onBack }) {
+  const [partners,   setPartners]   = useState([]);
+  const [partnerId,  setPartnerId]  = useState(1);
+  const [partner,    setPartner]    = useState(null);
+  const [orders,     setOrders]     = useState([]);
+  const [loading,    setLoading]    = useState(true);
 
+  // Load partner list once on mount
   useEffect(() => {
-    // Load partner details and orders in parallel
+    fetch(`${BASE_URL}/delivery/partners`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data) && data.length > 0) setPartners(data); })
+      .catch(() => {});
+  }, []);
+
+  // Reload partner details whenever selected partner changes
+  useEffect(() => {
+    setPartner(null);
+    setLoading(true);
     Promise.all([
-      fetch(`${BASE_URL}/delivery/partner/${PARTNER_ID}`).then(r => r.json()),
+      fetch(`${BASE_URL}/delivery/partner/${partnerId}`).then(r => r.json()),
       fetch(`${BASE_URL}/delivery/orders`).then(r => r.json()),
     ]).then(([partnerData, ordersData]) => {
       setPartner(partnerData);
       setOrders(Array.isArray(ordersData) ? ordersData : []);
       setLoading(false);
     }).catch(() => setLoading(false));
-  }, []);
+  }, [partnerId]);
 
   return (
     <div className="delivery-shell">
       <nav className="delivery-navbar">
         <span className="delivery-navbar-brand">Grab<span>Hub</span></span>
         <span className="delivery-navbar-pill">Delivery Partner</span>
+
+        {/* Partner switcher */}
+        {partners.length > 0 && (
+          <div className="navbar-switcher" style={{ marginLeft: "auto" }}>
+            <span className="navbar-switcher-label" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Viewing as
+            </span>
+            <select
+              className="delivery-partner-select"
+              value={partnerId}
+              onChange={e => setPartnerId(Number(e.target.value))}
+            >
+              {partners.map(p => (
+                <option key={p.partner_id} value={p.partner_id}>
+                  {p.first_name} {p.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {onBack && (
+          <button className="delivery-back-btn" onClick={onBack}>← Exit</button>
+        )}
       </nav>
 
       <div className="delivery-content">
 
-        {/* Partner info */}
         <PartnerInfoCard partner={partner} />
 
         <h1 className="delivery-page-title">Your Orders</h1>

@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// Get billing history for a customer
 exports.getBillingByCustomer = async (req, res) => {
   try {
     const [rows] = await db.query(
@@ -19,7 +18,6 @@ exports.getBillingByCustomer = async (req, res) => {
   }
 };
 
-// Get single billing detail
 exports.getBillingById = async (req, res) => {
   try {
     const [rows] = await db.query(

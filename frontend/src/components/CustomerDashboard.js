@@ -7,73 +7,57 @@ import Addresses from "./Addresses";
 import Subscriptions from "./Subscriptions";
 import Billing from "./Billing";
 
-export default function CustomerDashboard() {
+export default function CustomerDashboard({ customerId, customer, onLogout }) {
   const [view, setView] = useState("restaurants");
+  const [directRestaurant, setDirectRestaurant] = useState(null);
+
+  const goToRestaurant = (restaurant) => {
+    setDirectRestaurant(restaurant);
+    setView("restaurants");
+  };
+
+  const handleTabClick = (tab) => {
+    if (tab !== "restaurants") setDirectRestaurant(null);
+    setView(tab);
+  };
 
   return (
     <div>
       <nav className="navbar">
         <span className="navbar-brand">Grab<span>Hub</span></span>
-        <div className="navbar-tabs">
-          {/* Harini's tabs (unchanged) */}
-          <button
-            className={`navbar-tab ${view === "restaurants" ? "active" : ""}`}
-            onClick={() => setView("restaurants")}
-          >
-            🍴 Restaurants
-          </button>
-          <button
-            className={`navbar-tab ${view === "profile" ? "active" : ""}`}
-            onClick={() => setView("profile")}
-          >
-            🧬 My Profile
-          </button>
-          <button
-            className={`navbar-tab ${view === "recommendations" ? "active" : ""}`}
-            onClick={() => setView("recommendations")}
-          >
-            ✨ For You
-          </button>
 
-          {/* Mithuna's tabs (added) */}
-          <button
-            className={`navbar-tab ${view === "orders" ? "active" : ""}`}
-            onClick={() => setView("orders")}
-          >
-            📦 Orders
-          </button>
-          <button
-            className={`navbar-tab ${view === "addresses" ? "active" : ""}`}
-            onClick={() => setView("addresses")}
-          >
-            📍 Addresses
-          </button>
-          <button
-            className={`navbar-tab ${view === "subscriptions" ? "active" : ""}`}
-            onClick={() => setView("subscriptions")}
-          >
-            ⭐ GrabHub+
-          </button>
-          <button
-            className={`navbar-tab ${view === "billing" ? "active" : ""}`}
-            onClick={() => setView("billing")}
-          >
-            💳 Billing
-          </button>
+        <div className="navbar-tabs">
+          <button className={`navbar-tab ${view === "restaurants"    ? "active" : ""}`} onClick={() => handleTabClick("restaurants")}>Restaurants</button>
+          <button className={`navbar-tab ${view === "profile"        ? "active" : ""}`} onClick={() => handleTabClick("profile")}>My Profile</button>
+          <button className={`navbar-tab ${view === "recommendations" ? "active" : ""}`} onClick={() => handleTabClick("recommendations")}>For You</button>
+          <button className={`navbar-tab ${view === "orders"         ? "active" : ""}`} onClick={() => handleTabClick("orders")}>Orders</button>
+          <button className={`navbar-tab ${view === "addresses"      ? "active" : ""}`} onClick={() => handleTabClick("addresses")}>Addresses</button>
+          <button className={`navbar-tab ${view === "subscriptions"  ? "active" : ""}`} onClick={() => handleTabClick("subscriptions")}>GrabHub+</button>
+          <button className={`navbar-tab ${view === "billing"        ? "active" : ""}`} onClick={() => handleTabClick("billing")}>Billing</button>
+        </div>
+
+        <div className="navbar-user">
+          <span className="navbar-user-name">
+            {customer?.first_name} {customer?.last_name}
+          </span>
+          <button className="navbar-logout-btn" onClick={onLogout}>Sign Out</button>
         </div>
       </nav>
 
       <main className="page">
-        {/* Harini's views (unchanged) */}
-        {view === "restaurants"     && <RestaurantList />}
-        {view === "profile"         && <Profile />}
-        {view === "recommendations" && <Recommendations />}
-
-        {/* Mithuna's views (added) */}
-        {view === "orders"          && <Orders />}
-        {view === "addresses"       && <Addresses />}
-        {view === "subscriptions"   && <Subscriptions />}
-        {view === "billing"         && <Billing />}
+        {view === "restaurants" && (
+          <RestaurantList
+            customerId={customerId}
+            initialRestaurant={directRestaurant}
+            onClearInitial={() => setDirectRestaurant(null)}
+          />
+        )}
+        {view === "profile"         && <Profile         customerId={customerId} />}
+        {view === "recommendations" && <Recommendations customerId={customerId} goToRestaurant={goToRestaurant} />}
+        {view === "orders"          && <Orders          customerId={customerId} />}
+        {view === "addresses"       && <Addresses       customerId={customerId} />}
+        {view === "subscriptions"   && <Subscriptions   customerId={customerId} />}
+        {view === "billing"         && <Billing         customerId={customerId} />}
       </main>
     </div>
   );

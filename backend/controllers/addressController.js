@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// Get all addresses for a customer
 exports.getAddressesByCustomer = async (req, res) => {
   try {
     const [rows] = await db.query(
@@ -14,11 +13,9 @@ exports.getAddressesByCustomer = async (req, res) => {
   }
 };
 
-// Add new address
 exports.addAddress = async (req, res) => {
   const { customer_id, street_number, street_name, apt_unit, city, state, zipcode, address_type, delivery_instructions, is_default } = req.body;
   try {
-    // If setting as default, unset existing default first
     if (is_default) {
       await db.query('UPDATE Address SET is_default = FALSE WHERE customer_id = ?', [customer_id]);
     }
@@ -34,7 +31,6 @@ exports.addAddress = async (req, res) => {
   }
 };
 
-// Update address
 exports.updateAddress = async (req, res) => {
   const { street_number, street_name, apt_unit, city, state, zipcode, address_type, delivery_instructions } = req.body;
   try {
@@ -50,7 +46,6 @@ exports.updateAddress = async (req, res) => {
   }
 };
 
-// Delete address
 exports.deleteAddress = async (req, res) => {
   try {
     await db.query('DELETE FROM Address WHERE address_id = ?', [req.params.id]);

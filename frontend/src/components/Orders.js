@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const API = "http://localhost:5050/api";
 
-export default function Orders() {
+export default function Orders({ customerId }) {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showPlaceOrder, setShowPlaceOrder] = useState(false);
@@ -11,9 +11,7 @@ export default function Orders() {
   const [menuItems, setMenuItems] = useState([]);
   const [message, setMessage] = useState("");
 
-  const customerId = 1;
-
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(() => { fetchOrders(); }, [customerId]);
 
   const fetchOrders = async () => {
     try {
@@ -145,7 +143,7 @@ export default function Orders() {
     const { order, items, billing } = selectedOrder;
     const itemsList = Array.isArray(items) ? items : [];
     return (
-      <div style={{ padding: "1rem" }}>
+      <div style={{ padding: "1.5rem 2rem" }}>
         <button onClick={() => setSelectedOrder(null)} style={btnStyle}>← Back</button>
         <h2>Order #{order.order_id}</h2>
         {message && <p style={{ color: "green" }}>{message}</p>}
@@ -158,8 +156,8 @@ export default function Orders() {
           {order.scheduled_time && <p><strong>Scheduled:</strong> {new Date(order.scheduled_time).toLocaleString()}</p>}
           {order.party_size && <p><strong>Party Size:</strong> {order.party_size}</p>}
         </div>
-        <h3>Items</h3>
-        <table style={tableStyle}>
+        <h3 style={{ marginTop: "1.5rem", marginBottom: "0.5rem" }}>Items</h3>
+        <table style={tableStyle} className="orders-table">
           <thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead>
           <tbody>
             {itemsList.map((i, idx) => (
@@ -191,7 +189,7 @@ export default function Orders() {
   // --- PLACE ORDER FORM ---
   if (showPlaceOrder) {
     return (
-      <div style={{ padding: "1rem" }}>
+      <div style={{ padding: "1.5rem 2rem" }}>
         <button onClick={() => setShowPlaceOrder(false)} style={btnStyle}>← Back</button>
         <h2>Place Order</h2>
         <form onSubmit={handlePlaceOrder} style={cardStyle}>
@@ -286,14 +284,14 @@ export default function Orders() {
 
   // --- ORDER LIST ---
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "1.5rem 2rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h2>My Orders</h2>
         <button onClick={openPlaceOrder} style={{ ...btnStyle, background: "#e44d26", color: "#fff" }}>+ Place Order</button>
       </div>
       {message && <p style={{ color: "green" }}>{message}</p>}
       {orders.length === 0 ? <p>No orders yet.</p> : (
-        <table style={tableStyle}>
+        <table style={tableStyle} className="orders-table">
           <thead>
             <tr><th>Order #</th><th>Restaurant</th><th>Type</th><th>Status</th><th>Total</th><th>Date</th><th></th></tr>
           </thead>
@@ -321,10 +319,10 @@ export default function Orders() {
   );
 }
 
-const cardStyle = { background: "#fff", borderRadius: "8px", padding: "1rem", marginBottom: "1rem", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" };
-const tableStyle = { width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: "8px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" };
-const badgeStyle = { padding: "0.2rem 0.6rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "600" };
-const btnStyle = { padding: "0.5rem 1rem", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "600", background: "#eee" };
-const btnSmStyle = { padding: "0.3rem 0.6rem", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.85rem", background: "#e44d26", color: "#fff" };
-const fieldStyle = { marginBottom: "0.75rem" };
-const inputStyle = { width: "100%", padding: "0.5rem", border: "1px solid #ccc", borderRadius: "6px", fontSize: "0.9rem" };
+const cardStyle = { background: "#fff", borderRadius: "8px", padding: "1.25rem 1.5rem", marginBottom: "1.25rem", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", lineHeight: "2" };
+const tableStyle = { width: "100%", borderCollapse: "collapse", background: "#fff", borderRadius: "8px", overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", marginTop: "1rem" };
+const badgeStyle = { padding: "0.25rem 0.75rem", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "600" };
+const btnStyle = { padding: "0.5rem 1.1rem", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "600", background: "#eee" };
+const btnSmStyle = { padding: "0.35rem 0.75rem", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "0.85rem", background: "#e44d26", color: "#fff" };
+const fieldStyle = { marginBottom: "1rem" };
+const inputStyle = { width: "100%", padding: "0.6rem 0.75rem", border: "1px solid #ccc", borderRadius: "6px", fontSize: "0.9rem", marginTop: "0.25rem" };

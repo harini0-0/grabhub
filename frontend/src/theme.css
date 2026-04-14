@@ -1851,6 +1851,261 @@
 }
 
 /* =========================================
+   AUTH CARD (Login / Register)
+   ========================================= */
+
+.auth-card {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 40px 44px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 0.35s ease;
+  z-index: 1;
+}
+
+.auth-back-btn {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.auth-back-btn:hover {
+  color: var(--text);
+  background: var(--bg);
+}
+
+.auth-brand {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -1px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+
+.auth-brand span {
+  color: var(--primary);
+}
+
+.auth-brand-sub {
+  font-size: 14px;
+  color: var(--text-sub);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-tabs {
+  display: flex;
+  background: var(--bg);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  margin-bottom: 24px;
+  gap: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.auth-tab.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-error {
+  background: var(--danger-light, #FFF1F2);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.auth-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auth-input {
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.auth-input::placeholder {
+  color: var(--text-muted);
+}
+
+.auth-submit {
+  margin-top: 6px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  color: white;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.auth-submit:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   NAVBAR USER + LOGOUT (CustomerDashboard)
+   ========================================= */
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.navbar-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-sub);
+  white-space: nowrap;
+}
+
+.navbar-logout-btn {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 5px 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.navbar-logout-btn:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-light, #FFF1F2);
+}
+
+/* =========================================
+   DELIVERY PARTNER SELECT
+   ========================================= */
+
+.delivery-partner-select {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px 6px 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  max-width: 200px;
+}
+
+.delivery-partner-select:focus,
+.delivery-partner-select:hover {
+  border-color: var(--primary);
+}
+
+.delivery-partner-select option {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.delivery-back-btn {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.5);
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-pill);
+  padding: 5px 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.delivery-back-btn:hover {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* =========================================
    ORDER HISTORY
    ========================================= */
 
@@ -2031,4 +2286,33 @@
   color: var(--text);
   border-top: 1.5px solid var(--border);
   margin-top: 4px;
+}
+
+/* =========================================
+   ORDERS TABLE (Mithuna's Orders.js)
+   ========================================= */
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f0f2f5;
+  font-size: 0.9rem;
+}
+
+.orders-table th {
+  background: #f8f9fa;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #6c757d;
+}
+
+.orders-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.orders-table tbody tr:hover {
+  background: #fafbfc;
 }

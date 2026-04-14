@@ -2,15 +2,13 @@ import { useState, useEffect } from "react";
 
 const API = "http://localhost:5050/api";
 
-export default function Addresses() {
+export default function Addresses({ customerId }) {
   const [addresses, setAddresses] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [message, setMessage] = useState("");
 
-  const customerId = 1;
-
-  useEffect(() => { fetchAddresses(); }, []);
+  useEffect(() => { fetchAddresses(); }, [customerId]);
 
   const fetchAddresses = async () => {
     try {

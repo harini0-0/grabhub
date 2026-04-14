@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// ✅ Add favourite
 exports.addFavourite = async (req, res) => {
   const { customer_id, restaurant_id, item_id } = req.body;
 
@@ -18,7 +17,6 @@ exports.addFavourite = async (req, res) => {
   }
 };
 
-// ✅ Get favourites for customer
 exports.getFavourites = async (req, res) => {
   const customerId = req.params.customerId;
 
@@ -41,7 +39,6 @@ exports.getFavourites = async (req, res) => {
   }
 };
 
-// ✅ Delete favourite
 exports.deleteFavourite = async (req, res) => {
   const favouriteId = req.params.id;
 

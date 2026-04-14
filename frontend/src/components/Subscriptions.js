@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 
 const API = "http://localhost:5050/api";
 
-export default function Subscriptions() {
+export default function Subscriptions({ customerId }) {
   const [subscriptions, setSubscriptions] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [message, setMessage] = useState("");
 
-  const customerId = 1;
-
-  useEffect(() => { fetchSubs(); }, []);
+  useEffect(() => { fetchSubs(); }, [customerId]);
 
   const fetchSubs = async () => {
     try {

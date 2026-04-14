@@ -2,10 +2,8 @@ import { useState, useEffect } from "react";
 
 const API = "http://localhost:5050/api";
 
-export default function Billing() {
+export default function Billing({ customerId }) {
   const [bills, setBills] = useState([]);
-
-  const customerId = 1;
 
   useEffect(() => {
     const fetchBills = async () => {
@@ -19,7 +17,7 @@ export default function Billing() {
       }
     };
     fetchBills();
-  }, []);
+  }, [customerId]);
 
   const getBadge = (status) => {
     if (status === "Completed") return { background: "#d4edda", color: "#155724" };

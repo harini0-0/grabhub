@@ -1,6 +1,19 @@
 const db = require('../config/db');
 
-// 🚴 Get delivery partner details
+exports.getAllPartners = async (_req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT partner_id, first_name, last_name, availability_status
+      FROM Delivery_Partner
+      ORDER BY partner_id
+    `);
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching partners' });
+  }
+};
+
 exports.getPartnerDetails = async (req, res) => {
   const { id } = req.params;
   try {
@@ -21,7 +34,6 @@ exports.getPartnerDetails = async (req, res) => {
   }
 };
 
-// 🚴 Get all orders for delivery partner
 exports.getDeliveryOrders = async (req, res) => {
   try {
     const [rows] = await db.query(`

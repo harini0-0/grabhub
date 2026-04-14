@@ -1,12 +1,10 @@
 const db = require('../config/db');
 const { runKNN } = require('../services/knnService');
 
-// 🧠 Generate profile
 exports.generateProfile = async (req, res) => {
     const customerId = req.params.customerId;
 
     try {
-        // 🔥 Extract features
         const [rows] = await db.query(`
       SELECT 
         AVG(m.spice_level) AS avg_spice,
@@ -31,13 +29,11 @@ exports.generateProfile = async (req, res) => {
             cuisine: Number(rows[0].cuisine_id) || 1
         };
 
-        // 🔥 Run KNN
         const result = await runKNN(userData);
         const { axis, category } = result;
 
         console.log("KNN Output:", axis, category);
 
-        // 🔥 Get category_id
         const [cat] = await db.query(`
       SELECT category_id FROM Profile_Category
       WHERE axis = ? AND category_name = ?
@@ -49,7 +45,6 @@ exports.generateProfile = async (req, res) => {
 
         const categoryId = cat[0].category_id;
 
-        // 🔥 Insert (avoid duplicates)
         await db.query(`
         INSERT INTO Customer_Profile (customer_id, category_id, axis)
         VALUES (?, ?, ?)
@@ -73,7 +68,6 @@ exports.getRecommendations = async (req, res) => {
   const customerId = req.params.customerId;
 
   try {
-    // 🔥 Get all profile axes
     const [profiles] = await db.query(`
       SELECT cp.axis, pc.category_name
       FROM Customer_Profile cp
@@ -89,7 +83,6 @@ exports.getRecommendations = async (req, res) => {
     let spiceCondition = '';
     let healthCondition = '';
 
-    // 🔥 Build conditions dynamically
     profiles.forEach(p => {
       if (p.axis === 'Spice' && p.category_name === 'Spicy Enthusiast') {
         spiceCondition = 'm.spice_level >= 4';
@@ -100,14 +93,12 @@ exports.getRecommendations = async (req, res) => {
       }
     });
 
-    // 🔥 Build WHERE clause
     let conditions = [];
     if (spiceCondition) conditions.push(spiceCondition);
     if (healthCondition) conditions.push(healthCondition);
 
     const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
-    // 🔥 FINAL QUERY (M:N FIXED)
     const [items] = await db.query(`
       SELECT DISTINCT m.item_id, m.item_name, m.price, m.spice_level, m.calories
       FROM Menu_Item m

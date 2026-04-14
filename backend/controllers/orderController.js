@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// Get order history for a customer
 exports.getOrdersByCustomer = async (req, res) => {
   try {
     const [rows] = await db.query(
@@ -18,7 +17,6 @@ exports.getOrdersByCustomer = async (req, res) => {
   }
 };
 
-// Get order detail with items and billing
 exports.getOrderById = async (req, res) => {
   try {
     const [orderRows] = await db.query(
@@ -33,7 +31,7 @@ exports.getOrderById = async (req, res) => {
     const [items] = await db.query(
       `SELECT oi.*, mi.item_name
        FROM Order_Item oi
-       JOIN Menu_Item mi ON oi.menu_item_id = mi.menu_item_id
+       JOIN Menu_Item mi ON oi.item_id = mi.item_id
        WHERE oi.order_id = ?`,
       [req.params.id]
     );
@@ -54,7 +52,6 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
-// Place order — calls the place_order stored procedure
 exports.placeOrder = async (req, res) => {
   const {
     customer_id, restaurant_id, address_id, order_type,
@@ -63,7 +60,6 @@ exports.placeOrder = async (req, res) => {
   } = req.body;
 
   try {
-    // Build item list string: 'menu_item_id:qty:unit_price,...'
     let itemList = '';
     if (Array.isArray(items)) {
       itemList = items.map(i => `${i.menu_item_id}:${i.quantity}:${i.unit_price}`).join(',');
@@ -75,7 +71,6 @@ exports.placeOrder = async (req, res) => {
       return res.status(400).json({ message: 'No items provided' });
     }
 
-    // Call stored procedure with ? placeholders
     await db.query(
       'CALL place_order(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @new_order_id)',
       [
@@ -95,7 +90,6 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
-// Cancel order — calls the cancel_order stored procedure
 exports.cancelOrder = async (req, res) => {
   try {
     await db.query('CALL cancel_order(?, @result_msg)', [req.params.id]);

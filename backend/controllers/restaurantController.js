@@ -1,12 +1,11 @@
 const db = require('../config/db');
 
 // Get all restaurants
-exports.getAllRestaurants = async (req, res) => {
+exports.getAllRestaurants = async (_req, res) => {
   try {
     const [rows] = await db.query(`
       SELECT restaurant_id, restaurant_name, city, state, average_rating
       FROM Restaurant
-      WHERE is_active = TRUE
     `);
     res.json(rows);
   } catch (error) {
