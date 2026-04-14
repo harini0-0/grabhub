@@ -219,7 +219,7 @@ CREATE TABLE Billing (
 
 CREATE TABLE Review_Rating (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT UNIQUE,
+    order_id INT,
     customer_id INT,
     restaurant_id INT,
 
@@ -282,13 +282,15 @@ CREATE TABLE Profile_Category (
 
 DROP TABLE IF EXISTS Customer_Profile;
 
+-- axis removed: it was a BCNF violation (category_id → axis, but axis was part of the PK).
+-- axis is now derived via JOIN to Profile_Category when needed.
+-- One-category-per-axis-per-customer is enforced by the validate_profile_axis trigger.
 CREATE TABLE Customer_Profile (
-    customer_id INT,
-    category_id INT,
-    axis ENUM('Cuisine','Spice','Health'),
+    customer_id INT NOT NULL,
+    category_id INT NOT NULL,
     assigned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    PRIMARY KEY (customer_id, axis),  -- 🔥 KEY CONSTRAINT
+    PRIMARY KEY (customer_id, category_id),
 
     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES Profile_Category(category_id) ON DELETE CASCADE

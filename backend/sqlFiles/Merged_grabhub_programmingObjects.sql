@@ -627,19 +627,31 @@ DROP TRIGGER IF EXISTS validate_profile_axis;
 
 DELIMITER //
 
+-- axis column was removed from Customer_Profile (BCNF fix).
+-- This trigger now enforces the one-category-per-axis-per-customer rule:
+-- a customer cannot be assigned two categories that share the same axis.
 CREATE TRIGGER validate_profile_axis
 BEFORE INSERT ON Customer_Profile
 FOR EACH ROW
 BEGIN
-    DECLARE v_axis ENUM('Cuisine','Spice','Health');
+    DECLARE v_new_axis  ENUM('Cuisine','Spice','Health');
+    DECLARE v_axis_count INT DEFAULT 0;
 
-    SELECT axis INTO v_axis
+    -- Resolve the axis of the incoming category
+    SELECT axis INTO v_new_axis
     FROM Profile_Category
     WHERE category_id = NEW.category_id;
 
-    IF v_axis != NEW.axis THEN
+    -- Check whether this customer already has a category on the same axis
+    SELECT COUNT(*) INTO v_axis_count
+    FROM Customer_Profile cp
+    JOIN Profile_Category pc ON cp.category_id = pc.category_id
+    WHERE cp.customer_id = NEW.customer_id
+      AND pc.axis = v_new_axis;
+
+    IF v_axis_count > 0 THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Axis mismatch between Profile_Category and Customer_Profile';
+        SET MESSAGE_TEXT = 'Customer already has a profile category assigned for this axis.';
     END IF;
 END //
 
