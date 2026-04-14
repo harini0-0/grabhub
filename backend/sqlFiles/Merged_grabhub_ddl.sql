@@ -40,8 +40,8 @@ CREATE TABLE Customer_Address (
 
     PRIMARY KEY (customer_id, address_id),
 
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE,
-    FOREIGN KEY (address_id) REFERENCES Address(address_id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (address_id) REFERENCES Address(address_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -79,7 +79,7 @@ CREATE TABLE Restaurant_Hours (
     is_closed BOOLEAN,
 
     PRIMARY KEY (restaurant_id, day_of_week),
-    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -111,7 +111,7 @@ CREATE TABLE Menu_Item (
     spice_level INT,
     calories INT,
 
-    FOREIGN KEY (cuisine_id) REFERENCES Cuisine(cuisine_id)
+    FOREIGN KEY (cuisine_id) REFERENCES Cuisine(cuisine_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE Restaurant_Menu_Item (
@@ -120,8 +120,8 @@ CREATE TABLE Restaurant_Menu_Item (
 
     PRIMARY KEY (restaurant_id, item_id),
 
-    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE,
-    FOREIGN KEY (item_id) REFERENCES Menu_Item(item_id) ON DELETE CASCADE
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES Menu_Item(item_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -145,9 +145,9 @@ CREATE TABLE `Order` (
     tip DECIMAL(6,2),
     total_amount DECIMAL(10,2),
 
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id),
-    FOREIGN KEY (address_id) REFERENCES Address(address_id)
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (address_id) REFERENCES Address(address_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -161,8 +161,8 @@ CREATE TABLE Order_Item (
     quantity INT CHECK (quantity > 0),
     unit_price DECIMAL(8,2),
 
-    FOREIGN KEY (order_id) REFERENCES `Order`(order_id) ON DELETE CASCADE,
-    FOREIGN KEY (item_id) REFERENCES Menu_Item(item_id)
+    FOREIGN KEY (order_id) REFERENCES `Order`(order_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES Menu_Item(item_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -194,8 +194,8 @@ CREATE TABLE Delivery (
     delivery_status ENUM('Assigned','Picked Up','In Transit','Delivered'),
     partner_tip DECIMAL(6,2),
 
-    FOREIGN KEY (order_id) REFERENCES `Order`(order_id),
-    FOREIGN KEY (partner_id) REFERENCES Delivery_Partner(partner_id)
+    FOREIGN KEY (order_id) REFERENCES `Order`(order_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (partner_id) REFERENCES Delivery_Partner(partner_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -210,7 +210,7 @@ CREATE TABLE Billing (
     billing_amount DECIMAL(10,2),
     payment_status ENUM('Pending','Completed','Refunded','Failed'),
 
-    FOREIGN KEY (order_id) REFERENCES `Order`(order_id)
+    FOREIGN KEY (order_id) REFERENCES `Order`(order_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -231,9 +231,9 @@ CREATE TABLE Review_Rating (
     review_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     helpful_count INT DEFAULT 0,
 
-    FOREIGN KEY (order_id) REFERENCES `Order`(order_id),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id)
+    FOREIGN KEY (order_id) REFERENCES `Order`(order_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -247,9 +247,9 @@ CREATE TABLE Favourites (
     item_id INT,
     saved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id),
-    FOREIGN KEY (item_id) REFERENCES Menu_Item(item_id)
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (restaurant_id) REFERENCES Restaurant(restaurant_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES Menu_Item(item_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -262,8 +262,8 @@ CREATE TABLE Combo_Meal (
     component_item_id INT,
     quantity INT CHECK (quantity > 0),
 
-    FOREIGN KEY (combo_item_id) REFERENCES Menu_Item(item_id),
-    FOREIGN KEY (component_item_id) REFERENCES Menu_Item(item_id)
+    FOREIGN KEY (combo_item_id) REFERENCES Menu_Item(item_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (component_item_id) REFERENCES Menu_Item(item_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ============================================================
@@ -292,8 +292,8 @@ CREATE TABLE Customer_Profile (
 
     PRIMARY KEY (customer_id, category_id),
 
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES Profile_Category(category_id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES Profile_Category(category_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 -- ============================================================
 -- SUBSCRIPTION (Mithuna)
@@ -309,7 +309,7 @@ CREATE TABLE Subscription (
     auto_renew BOOLEAN,
     monthly_fee DECIMAL(6,2),
 
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id)
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- ============================================================
